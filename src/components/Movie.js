@@ -2,22 +2,25 @@ import React from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { deleteMovie } from '../actions/movieActions';
-import { addFavorite } from '../actions/favoritesActions';
+import { addFavorite, removeFavorite } from '../actions/favoritesActions';
 
 const Movie = (props) => {
     const { id } = useParams();
     const { push } = useHistory();
-    const { displayFavorites } = props;
+    const { displayFavorites, favorites } = props;
 
     const movie = props.movies.find(movie=>movie.id===Number(id));
 
     const handleDelete = () => {
         props.dispatch(deleteMovie(movie.id));
+        props.dispatch(removeFavorite(movie.id));
         push('/movies');
     }
 
     const handleFavorite = () => {
-        props.dispatch(addFavorite(movie));
+        if(!favorites.includes(movie)) {
+            props.dispatch(addFavorite(movie));
+          }
         push('/movies');
     }
     
@@ -63,7 +66,8 @@ const Movie = (props) => {
 const mapStateToProps = (state) => {
     return({
         movies: state.movie.movies,
-        displayFavorites: state.favorites.displayFavorites
+        displayFavorites: state.favorites.displayFavorites,
+        favorites: state.favorites.favorites
     });
 }
 
